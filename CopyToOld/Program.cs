@@ -10,21 +10,21 @@ internal class CopyToOld
         var Path = @ConfigurationManager.AppSettings.Get("DirectoryPath");
         var CurrentVerDirectory = @ConfigurationManager.AppSettings.Get("CurrentVersionDirectory");
         var ArchiveDirectory = @ConfigurationManager.AppSettings.Get("ArchiveDirectory");
-        foreach (string SourcePath in Directory.GetDirectories(Path, CurrentVerDirectory + "*")) {
+        foreach (string SourcePath in Directory.GetDirectories(Path, CurrentVerDirectory + "*"))
+        {
             DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory);
             DestPath(Path, SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
             CreateTread(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
             CopyFileToNewDir(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
         }
-
+        RenDirectory(Path, CurrentVerDirectory);
     }
 
 
     static string DestinationPath(string SourcePath, string Path, string ArchiveDirectory, string CurrentVerDirectory)
     {
         //Собрать адрес для новых папок       
-        //DateTime ThisDay = DateTime.Today;
-        return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");// + ThisDay.ToString("d");
+        return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");
     }
 
     static void DestPath(string Path, string SourcePath, string DestinationPath)
@@ -48,7 +48,18 @@ internal class CopyToOld
     }
     static void RenDirectory(string Path, string CurrentVerDirectory)
     {
-       string[] CurrentDirectories = Directory.GetDirectories(Path, CurrentVerDirectory + "*");
+        string[] CurrentDirectories = Directory.GetDirectories(Path, CurrentVerDirectory + "*");
+        for (int i = 0; i < CurrentDirectories.Length; i++)
+        {
+            if (i == 0)
+            {
+                Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d"));
+            }
+            else
+            {
+                Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d") + "-" + i);
 
+            }
+        }
     }
-    }
+}
