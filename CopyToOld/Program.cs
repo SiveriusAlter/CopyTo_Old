@@ -16,7 +16,7 @@ internal class CopyToOld
             DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory);
 
             //Собрать новые папки
-            DestPath(Path, SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+            CreateDestDir(Path, SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
 
             //Создать идентичное дерево каталогов
             CreateTread(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
@@ -24,7 +24,8 @@ internal class CopyToOld
             //Скопировать все файлы. И перезаписать(если такие существуют)
             CopyFileToNewDir(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
         }
-        RenDirectory(Path, CurrentVerDirectory);
+        //Переименовать старые директории
+        RenCurDirectory(Path, CurrentVerDirectory);
     }
 
 
@@ -34,10 +35,16 @@ internal class CopyToOld
         return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");
     }
 
-    static void DestPath(string Path, string SourcePath, string DestinationPath)
+    static void CreateDestDir(string Path, string SourcePath, string DestinationPath)
     {
-        //Собрать новые папки
-        Directory.CreateDirectory(Path.Replace(SourcePath, DestinationPath));
+        //Проверить папку бэкапа на наличие созданных папок и создать новые папки
+        string[] BackupDir = Directory.GetDirectories(DestinationPath);
+        for (i=0, BackupDir in DestinationPath, i++)
+        {
+            if (BackupDir not in)
+            Directory.CreateDirectory(DestinationPath);
+        }
+
     }
 
     static void CreateTread(string SourcePath, string DestinationPath)
@@ -53,8 +60,11 @@ internal class CopyToOld
         foreach (string newPath in Directory.GetFiles(SourcePath, "*.*", SearchOption.AllDirectories))
             File.Copy(newPath, newPath.Replace(SourcePath, DestinationPath), true);
     }
-    static void RenDirectory(string Path, string CurrentVerDirectory)
+
+
+    static void RenCurDirectory(string Path, string CurrentVerDirectory)
     {
+        //Переименовать старые директории
         string[] CurrentDirectories = Directory.GetDirectories(Path, CurrentVerDirectory + "*");
         for (int i = 0; i < CurrentDirectories.Length; i++)
         {
