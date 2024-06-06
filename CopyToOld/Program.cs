@@ -12,9 +12,16 @@ internal class CopyToOld
         var ArchiveDirectory = @ConfigurationManager.AppSettings.Get("ArchiveDirectory");
         foreach (string SourcePath in Directory.GetDirectories(Path, CurrentVerDirectory + "*"))
         {
+            //Собрать адрес для новых папок
             DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory);
+
+            //Собрать новые папки
             DestPath(Path, SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+
+            //Создать идентичное дерево каталогов
             CreateTread(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+
+            //Скопировать все файлы. И перезаписать(если такие существуют)
             CopyFileToNewDir(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
         }
         RenDirectory(Path, CurrentVerDirectory);
