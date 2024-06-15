@@ -88,7 +88,7 @@ internal class CopyToOld
         }
         else
         {
-            Console.WriteLine("Текущая дирректория сегодня уже создавалась!");
+            Console.WriteLine("У текущей директории текущая дата. Не изменяем.");
         }
     }
 }
