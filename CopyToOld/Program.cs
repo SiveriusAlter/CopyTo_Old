@@ -14,7 +14,7 @@ internal class CopyToOld
         {
 
             //Собрать новые папки
-            var DestinationPath = CreateDestDir(SourcePath, ArchiveDirectory, CurrentVerDirectory);
+            var DestinationPath = CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory);
 
             //Создать идентичное дерево каталогов
             CreateTread(SourcePath, DestinationPath);
@@ -27,17 +27,19 @@ internal class CopyToOld
     }
 
 
-    static string CreateDestDir(string SourcePath, string ArchiveDirectory, string CurrentVerDirectory)
+    static string CreateDestDir(string Path, string SourcePath, string ArchiveDirectory, string CurrentVerDirectory)
     {
-        string DestinationPath = SourcePath.Replace(CurrentVerDirectory, ArchiveDirectory + "\\");
+        string DestinationPathTemp = SourcePath.Replace(CurrentVerDirectory, ArchiveDirectory + "\\");
         //Проверить папку бэкапа на наличие созданных папок и создать новые папки
-        string[] BackupDir = Directory.GetDirectories(ArchiveDirectory);
-        if (BackupDir.Contains(DestinationPath))
+        string[] BackupDir = Directory.GetDirectories(Path + "\\" +ArchiveDirectory + "\\");
+        var DestinationPath = DestinationPathTemp; 
+        for (int i = 0; BackupDir.Contains(DestinationPath); i++)
         {
-            for (int i = 0; BackupDir.Contains(DestinationPath)==false; i++)
+            if (i != 0)
             {
-                DestinationPath = DestinationPath + "-" + i.ToString();
+                DestinationPath = DestinationPath.Remove(DestinationPathTemp.Length) + "-" + i;
             }
+
         }
         Directory.CreateDirectory(DestinationPath);
         return DestinationPath;
@@ -64,7 +66,7 @@ internal class CopyToOld
     {
         //Переименовать старые директории
         string[] CurrentDirectories = Directory.GetDirectories(Path, CurrentVerDirectory + "*");
-        if (CurrentDirectories.Contains(CurrentVerDirectory.Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d") + "*") == false)
+        if (CurrentDirectories.Contains(Path + "\\" + CurrentVerDirectory + DateTime.Today.ToString("d")) == false)
         {
             for (int i = 0; i < CurrentDirectories.Length; i++)
             {
