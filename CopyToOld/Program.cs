@@ -37,11 +37,13 @@ internal class CopyToOld
         {
             if (i != 0)
             {
+                Console.WriteLine("Папка " + DestinationPath + " существует. Создаем другую папку.");
                 DestinationPath = DestinationPath.Remove(DestinationPathTemp.Length) + "-" + i;
             }
 
         }
         Directory.CreateDirectory(DestinationPath);
+        Console.WriteLine("Создали папку с адресом: "+ DestinationPath);
         return DestinationPath;
 
     }
@@ -52,6 +54,7 @@ internal class CopyToOld
         //Создать идентичное дерево каталогов
         foreach (string dirPath in Directory.GetDirectories(SourcePath, "*", SearchOption.AllDirectories))
             Directory.CreateDirectory(dirPath.Replace(SourcePath, DestinationPath));
+        Console.WriteLine("Создано идентичное древо каталогов");
     }
 
     static void CopyFileToNewDir(string SourcePath, string DestinationPath)
@@ -59,6 +62,7 @@ internal class CopyToOld
         //Скопировать все файлы. И перезаписать(если такие существуют)
         foreach (string newPath in Directory.GetFiles(SourcePath, "*.*", SearchOption.AllDirectories))
             File.Copy(newPath, newPath.Replace(SourcePath, DestinationPath), true);
+        Console.WriteLine("Скопировали файлы");
     }
 
 
@@ -70,6 +74,7 @@ internal class CopyToOld
         {
             for (int i = 0; i < CurrentDirectories.Length; i++)
             {
+                Console.WriteLine("Переименовываем директорию: " + CurrentDirectories[i]);
                 if (i == 0)
                 {
                     Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d"));
