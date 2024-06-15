@@ -12,40 +12,44 @@ internal class CopyToOld
         var ArchiveDirectory = @ConfigurationManager.AppSettings.Get("ArchiveDirectory");
         foreach (string SourcePath in Directory.GetDirectories(Path, CurrentVerDirectory + "*"))
         {
-            //Собрать адрес для новых папок
-            DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory);
 
             //Собрать новые папки
-            CreateDestDir(Path, SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+            CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory);
 
             //Создать идентичное дерево каталогов
-            CreateTread(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+            CreateTread(SourcePath, CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory));
 
             //Скопировать все файлы. И перезаписать(если такие существуют)
-            CopyFileToNewDir(SourcePath, DestinationPath(SourcePath, Path, ArchiveDirectory, CurrentVerDirectory));
+            CopyFileToNewDir(SourcePath, CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory));
         }
         //Переименовать старые директории
         RenCurDirectory(Path, CurrentVerDirectory);
     }
 
 
-    static string DestinationPath(string SourcePath, string Path, string ArchiveDirectory, string CurrentVerDirectory)
+    /*  static string DestinationPath(string SourcePath, string Path, )
+      {
+          //Собрать адрес для новых папок       
+          return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");
+      }
+  */
+    static string CreateDestDir(string Path, string SourcePath, string ArchiveDirectory, string CurrentVerDirectory)
     {
-        //Собрать адрес для новых папок       
-        return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");
-    }
-
-    static void CreateDestDir(string Path, string SourcePath, string DestinationPath)
-    {
+        string DestinationPath = SourcePath.Replace(CurrentVerDirectory, ArchiveDirectory + "\\");
         //Проверить папку бэкапа на наличие созданных папок и создать новые папки
-        string[] BackupDir = Directory.GetDirectories(DestinationPath);
-        for (i=0, BackupDir in DestinationPath, i++)
+        string[] BackupDir = Directory.GetDirectories(ArchiveDirectory);
+        if (BackupDir.Contains(DestinationPath))
         {
-            if (BackupDir not in)
-            Directory.CreateDirectory(DestinationPath);
+            for (int i = 0; BackupDir.Contains(DestinationPath)==false; i++)
+            {
+                DestinationPath = DestinationPath + "-" + i.ToString();
+            }
         }
+        Directory.CreateDirectory(DestinationPath);
+        return DestinationPath;
 
     }
+
 
     static void CreateTread(string SourcePath, string DestinationPath)
     {
