@@ -14,26 +14,20 @@ internal class CopyToOld
         {
 
             //Собрать новые папки
-            CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory);
+            var DestinationPath = CreateDestDir(SourcePath, ArchiveDirectory, CurrentVerDirectory);
 
             //Создать идентичное дерево каталогов
-            CreateTread(SourcePath, CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory));
+            CreateTread(SourcePath, DestinationPath);
 
             //Скопировать все файлы. И перезаписать(если такие существуют)
-            CopyFileToNewDir(SourcePath, CreateDestDir(Path, SourcePath, ArchiveDirectory, CurrentVerDirectory));
+            CopyFileToNewDir(SourcePath, DestinationPath);
         }
-        //Переименовать старые директории
+        //Переименовать старые директории, если они не от текущей даты
         RenCurDirectory(Path, CurrentVerDirectory);
     }
 
 
-    /*  static string DestinationPath(string SourcePath, string Path, )
-      {
-          //Собрать адрес для новых папок       
-          return Path + "\\" + ArchiveDirectory + "\\" + SourcePath.Replace(Path + "\\" + CurrentVerDirectory, "");
-      }
-  */
-    static string CreateDestDir(string Path, string SourcePath, string ArchiveDirectory, string CurrentVerDirectory)
+    static string CreateDestDir(string SourcePath, string ArchiveDirectory, string CurrentVerDirectory)
     {
         string DestinationPath = SourcePath.Replace(CurrentVerDirectory, ArchiveDirectory + "\\");
         //Проверить папку бэкапа на наличие созданных папок и создать новые папки
@@ -70,17 +64,24 @@ internal class CopyToOld
     {
         //Переименовать старые директории
         string[] CurrentDirectories = Directory.GetDirectories(Path, CurrentVerDirectory + "*");
-        for (int i = 0; i < CurrentDirectories.Length; i++)
+        if (CurrentDirectories.Contains(CurrentVerDirectory.Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d") + "*") == false)
         {
-            if (i == 0)
+            for (int i = 0; i < CurrentDirectories.Length; i++)
             {
-                Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d"));
-            }
-            else
-            {
-                Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d") + "-" + i);
+                if (i == 0)
+                {
+                    Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d"));
+                }
+                else
+                {
+                    Directory.Move(CurrentDirectories[i], CurrentDirectories[i].Remove(Path.Length + CurrentVerDirectory.Length + 1) + DateTime.Today.ToString("d") + "-" + i);
 
+                }
             }
+        }
+        else
+        {
+            Console.WriteLine("Текущая дирректория сегодня уже создавалась!");
         }
     }
 }
